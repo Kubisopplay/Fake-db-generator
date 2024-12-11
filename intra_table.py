@@ -29,7 +29,8 @@ def constraints_intra_table(all_fields, all_generators,):
             
     prompt_prepared = lm
     results = {}
-    for field in all_fields:    
+    for field in all_fields:
+        lm = prompt_prepared    
         with user():
             lm += f"I have a field named {field['name']} of type {field['type']} with additional properties {field['rest']}."
         with assistant():
@@ -38,11 +39,16 @@ def constraints_intra_table(all_fields, all_generators,):
             lm += f"The generator has the following constraints: {all_generators[lm['tool']]['constraints']}"
             constraints = []
             for constraint in all_generators[lm['tool']]['constraints']:
-                lm += f"Based on the data gathered, I think the best value for the constraint {constraint} is" + select(all_fields, "constraint_value_{constraint}")
+                lm += f"Based on the data gathered, I think the best value for the constraint {constraint} is" + gen(f"constraint_value_{constraint}")
                 constraints.append(lm[f"constraint_value_{constraint}"])
+            results[field['name']] = (lm['tool'], constraints)
+    return results
     
 mock_table = [{"name": "id", "type": "INT", "rest": "PRIMARY KEY"},
                 {"name": "name", "type": "VARCHAR(100)", "rest": "NOT NULL"},
                 {"name": "surname", "type": "VARCHAR(510)", "rest": "NOT NULL"},
                 {"name": "email", "type": "VARCHAR(100)", "rest": "NOT NULL"}]
 
+if __name__ == "__main__":
+    print(constraints_intra_table(mock_table, tools))
+    
