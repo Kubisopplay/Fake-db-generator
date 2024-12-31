@@ -28,8 +28,9 @@ def intra_table_generator(table):
     
     
     for field in table:
-       all_generators_required.append(get_best_tool(field))
-       generators_ordered[field['name']] = get_best_tool(field)
+        best_tool = get_best_tool(field)
+        all_generators_required.append(best_tool) 
+        generators_ordered[field['name']] = best_tool
     
     for generator in all_generators_required:
         for constraint in all_generators[generator]['constraints']:
@@ -48,11 +49,23 @@ def intra_table_generator(table):
     intermediate_constraints = list(set(intermediate_constraints))
     
     
-    return primary_constraints, intermediate_constraints, all_generators, generators_ordered
+    return primary_constraints, intermediate_constraints, all_generators_required, generators_ordered
         
         
 def generate_row(primary_constraints, intermediate_constraints, all_generators, generators_ordered):
-    pass
+    primary_generator = loaded_model + "Create a value for a constraint for a set of generators"
+    constraints = {}
+    for constraint in primary_constraints:
+        generator = primary_generator + "\r\nName of the generator: " + constraint
+        generator += "\r\n The value that is gonna define the row of the generator is: " + gen("value", temperature=0.9, max_tokens=20)
+        constraints[constraint] = generator["value"]
+    
+    for generator in intermediate_constraints:
+        generator_constraints = all_generators[generator]
+        temp = {}
+        for constraint in generator_constraints:
+            temp[constraint] = constraints[constraint]
+        constraints[generator] = all_generators[generator]["function"](**temp)
     
 mock_table = [{"name": "id", "type": "INT", "rest": "PRIMARY KEY"},
                 {"name": "name", "type": "VARCHAR(100)", "rest": "NOT NULL"},
