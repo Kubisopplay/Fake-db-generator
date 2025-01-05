@@ -52,25 +52,50 @@ def intra_table_generator(table):
     return primary_constraints, intermediate_constraints, all_generators_required, generators_ordered
         
         
-def generate_row(primary_constraints, intermediate_constraints, all_generators, generators_ordered):
-    primary_generator = loaded_model + "Create a value for a constraint for a set of generators"
+def generate_row(primary_constraints, intermediate_constraints, all_generators_required, generators_ordered):
+    with system():
+        primary_generator = loaded_model + "You are a database administrator and you need to generate a value for a field in a database. The field is described by its name, type, and additional properties.\
+            The generator has a set of constraints that define what value will it generate. \
+            They should be used to generate a coherent set of values for a row in the table. \
+            For example, if there is a field named locale of type VARCHAR(100) and additional properties NOT NULL, the generator should generate a locale name. \
+            Remember to only answer the question so the code does not break. "
+
+
     constraints = {}
     for constraint in primary_constraints:
-        generator = primary_generator + "\r\nName of the generator: " + constraint
-        generator += "\r\n The value that is gonna define the row of the generator is: " + gen("value", temperature=0.9, max_tokens=20)
-        constraints[constraint] = generator["value"]
+        with user():
+            generator = primary_generator + "\r\nName of the constraint: " + constraint
+            generator += " Remember to only answer the question with no additional text"
+        with assistant():
+            generator += "Lets think this step by step " + gen("Thoth")
+            generator += "\r\n The value that is gonna define the row of the generator is: " + gen("value", temperature=0.4, max_tokens=20) + "."
+        constraints[constraint] = generator["value"].strip().replace("\n", "").replace("\r", "").replace("\'", "").replace("\"", "").replace("  ", " ").replace("[", "").replace("]", "")
     
     for generator in intermediate_constraints:
         generator_constraints = all_generators[generator]
         temp = {}
-        for constraint in generator_constraints:
+        for constraint in generator_constraints["constraints"]:
             temp[constraint] = constraints[constraint]
         constraints[generator] = all_generators[generator]["function"](**temp)
+        
+    row = {}
     
+    for field in generators_ordered:
+        if generators_ordered[field] in constraints:
+            row[field] = constraints[generators_ordered[field]]
+        else:
+            row[field] = all_generators[generators_ordered[field]]["function"](**constraints)
+            
+    return row
+
+
 mock_table = [{"name": "id", "type": "INT", "rest": "PRIMARY KEY"},
                 {"name": "name", "type": "VARCHAR(100)", "rest": "NOT NULL"},
                 {"name": "surname", "type": "VARCHAR(510)", "rest": "NOT NULL"},
                 {"name": "email", "type": "VARCHAR(100)", "rest": "NOT NULL"}]
 
 
-print(intra_table_generator(mock_table))
+
+
+for i in range(10):
+    print(generate_row(*intra_table_generator(mock_table)))

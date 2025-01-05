@@ -23,7 +23,7 @@ try:
     loaded_model = models.LlamaCpp(model=f"D:\Studia\Fake-db-generator\Meta-Llama-3.1-8B-Instruct-IQ4_XS.gguf",
                                echo=False,
                                chat_template=Llama3ChatTemplate,
-                               n_gpu_layers=20,
+                               n_gpu_layers=-1,
                                n_ctx=2048,
                                # Lower it if you get VRAM oom errors
                                )
