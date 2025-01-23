@@ -1,3 +1,5 @@
+from multiprocessing import freeze_support
+from time import sleep
 import requests
 import guidance.models as models
 from guidance.chat import Llama3ChatTemplate
@@ -18,14 +20,12 @@ if __name__ == "__main__":
             print("Error downloading the file:", e)
     else:
         print("Model already downloaded")
-      
-try:  
-    loaded_model = models.LlamaCpp(model=f"D:\Studia\Fake-db-generator\Meta-Llama-3.1-8B-Instruct-IQ4_XS.gguf",
-                               echo=False,
-                               chat_template=Llama3ChatTemplate,
-                               n_gpu_layers=-1,
-                               n_ctx=2048,
-                               # Lower it if you get VRAM oom errors
-                               )
-except Exception as e:
-    pass
+    
+sleep(5)
+loaded_model = models.LlamaCpp(model=f"D:\Studia\Fake-db-generator\Meta-Llama-3.1-8B-Instruct-IQ4_XS.gguf",
+                        echo=False,
+                        chat_template=Llama3ChatTemplate,
+                        n_gpu_layers=-1,
+                        n_ctx=1024,
+                        # Lower it if you get VRAM oom errors
+                        )

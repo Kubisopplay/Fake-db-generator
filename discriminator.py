@@ -42,7 +42,3 @@ def get_best_tool(field):
     #print(lm)
     return lm["tool"]
        
-        
-print(get_best_tool({"name": "id", "type": "INT", "rest": "PRIMARY KEY"}))
-print(get_best_tool({"name": "surname", "type": "VARCHAR(510)", "rest": "NOT NULL"}))
-print(get_best_tool({"name": "email", "type": "VARCHAR(100)", "rest": "NOT NULL"}))

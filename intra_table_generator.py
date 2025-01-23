@@ -6,6 +6,7 @@ from guidance import system, user, assistant, gen, select
 from guidancestuff import loaded_model
 from generators import personal, misc
 from discriminator import get_best_tool
+from multiprocessing import freeze_support
 
 # get all constraints
 # get all generators
@@ -65,10 +66,10 @@ def generate_row(primary_constraints, intermediate_constraints, all_generators_r
     for constraint in primary_constraints:
         with user():
             generator = primary_generator + "\r\nName of the constraint: " + constraint
-            generator += " Remember to only answer the question with no additional text"
+            generator += " Remember to only answer the question, so the program processing it does not get confused"
         with assistant():
             generator += "Lets think this step by step " + gen("Thoth")
-            generator += "\r\n The value that is gonna define the row of the generator is: " + gen("value", temperature=0.4, max_tokens=20) + "."
+            generator += "My final answer for the value of the generator is: " + gen("value", temperature=0.4, max_tokens=20) + "."
         constraints[constraint] = generator["value"].strip().replace("\n", "").replace("\r", "").replace("\'", "").replace("\"", "").replace("  ", " ").replace("[", "").replace("]", "")
     
     for generator in intermediate_constraints:
@@ -94,8 +95,23 @@ mock_table = [{"name": "id", "type": "INT", "rest": "PRIMARY KEY"},
                 {"name": "surname", "type": "VARCHAR(510)", "rest": "NOT NULL"},
                 {"name": "email", "type": "VARCHAR(100)", "rest": "NOT NULL"}]
 
+mock_table2 = [{"name": "id", "type": "INT", "rest": "PRIMARY KEY"},
+                {"name": "title", "type": "VARCHAR(255)", "rest": "NOT NULL"},
+                {"name": "author", "type": "VARCHAR(255)", "rest": "NOT NULL"},
+                {"name": "published_year", "type": "INT", "rest": "NOT NULL"},
+                {"name": "genre", "type": "VARCHAR(100)", "rest": "NOT NULL"},
+                {"name": "isbn", "type": "VARCHAR(13)", "rest": "NOT NULL"}
+]
+import time
 
+def main():
+    start = time.time()
+    for i in range(2):
+        print(generate_row(*intra_table_generator(mock_table)))
+    print(time.time() - start)
+    
+    start = time.time()
+    for i in range(2):
+        print(generate_row(*intra_table_generator(mock_table2)))
+    print(time.time() - start)
 
-
-for i in range(10):
-    print(generate_row(*intra_table_generator(mock_table)))
