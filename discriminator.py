@@ -2,7 +2,7 @@
 from guidance.models import Transformers
 from guidance import system, user, assistant, gen, select
 from generators import personal, misc
-from guidancestuff import loaded_model
+from guidancestuff import load_model
 #import torch
 
 
@@ -26,7 +26,7 @@ def make_tool_descriptions():
 def get_best_tool(field):
 
     #phi3_lm = Transformers("microsoft/Phi-3-mini-4k-instruct",  echo=False)
-    lm = loaded_model
+    lm = load_model()
     
     with system():
         lm += f"Your goal is to assign a value generator to a field in a database. The generator is described by its name, and the field is described by its name,\

@@ -21,11 +21,12 @@ if __name__ == "__main__":
     else:
         print("Model already downloaded")
     
-sleep(5)
-loaded_model = models.LlamaCpp(model=f"D:\Studia\Fake-db-generator\Meta-Llama-3.1-8B-Instruct-IQ4_XS.gguf",
-                        echo=False,
-                        chat_template=Llama3ChatTemplate,
-                        n_gpu_layers=-1,
-                        n_ctx=1024,
-                        # Lower it if you get VRAM oom errors
-                        )
+
+def load_model():
+    return models.LlamaCpp(
+        model=f"D:/Studia/Fake-db-generator/Meta-Llama-3.1-8B-Instruct-IQ4_XS.gguf",
+        echo=False,
+        chat_template=Llama3ChatTemplate,
+        n_gpu_layers=-1,
+        n_ctx=1024,
+    )

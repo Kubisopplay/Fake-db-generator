@@ -1,6 +1,6 @@
 import faker
 import random
-from guidancestuff import loaded_model
+from guidancestuff import load_model
 from guidance import system, user, assistant, gen, select
 import datetime
 #constraints that require a variable input like name should be the same as a generator name that generates expected input
@@ -80,7 +80,7 @@ def get_nip( **kwargs):
 
 
 def get_email( **kwargs):
-    llm = loaded_model
+    lm = load_model()
     
     with system():
         llm += f"Your goal is to generate a random email address. The email address should be generated based on the name and surname of a person.\

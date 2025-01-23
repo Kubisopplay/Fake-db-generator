@@ -1,8 +1,10 @@
 
-from guidancestuff import loaded_model
+
 from guidance import system, user, assistant, gen, select
 import random
-
+import time
+time.sleep(10)
+from guidancestuff import load_model
 last_id = -1
 
 def id_generator(**kwargs):
@@ -19,7 +21,7 @@ def universal_generator(**kwargs):
         suggestion = kwargs["suggestions"]
     else:
         suggestion = "No suggestion"
-    lm = loaded_model
+    lm = load_model()
     with system():
         lm += "You are a random data generator. You have to generate a plausible value for a field in a database. The field is described by its name, type, and additional properties.\
             The generator is a universal generator, it can generate any type of data, but its very slow.\

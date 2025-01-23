@@ -3,7 +3,7 @@
 from generators.personal import generators_dict as personal_generators_dict
 from generators.misc import generators_dict as misc_generators_dict
 from guidance import system, user, assistant, gen, select
-from guidancestuff import loaded_model
+from guidancestuff import load_model
 from generators import personal, misc
 from discriminator import get_best_tool
 from multiprocessing import freeze_support
@@ -54,8 +54,9 @@ def intra_table_generator(table):
         
         
 def generate_row(primary_constraints, intermediate_constraints, all_generators_required, generators_ordered):
+    lm = load_model()
     with system():
-        primary_generator = loaded_model + "You are a database administrator and you need to generate a value for a field in a database. The field is described by its name, type, and additional properties.\
+        primary_generator = lm + "You are a database administrator and you need to generate a value for a field in a database. The field is described by its name, type, and additional properties.\
             The generator has a set of constraints that define what value will it generate. \
             They should be used to generate a coherent set of values for a row in the table. \
             For example, if there is a field named locale of type VARCHAR(100) and additional properties NOT NULL, the generator should generate a locale name. \
@@ -115,3 +116,6 @@ def main():
         print(generate_row(*intra_table_generator(mock_table2)))
     print(time.time() - start)
 
+if __name__ == "__main__":
+    freeze_support()
+    main()
